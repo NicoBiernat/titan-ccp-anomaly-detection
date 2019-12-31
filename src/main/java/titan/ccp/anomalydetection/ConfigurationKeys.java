@@ -13,6 +13,8 @@ public final class ConfigurationKeys {
 
     public static final String CASSANDRA_INIT_TIMEOUT_MS = "cassandra.init.timeout.ms";
 
+    public static final String CASSANDRA_TABLE_NAME_SUFFIX = "cassandra.table.name.suffix";
+
     public static final String WEBSERVER_ENABLE = "webserver.enable";
 
     public static final String WEBSERVER_PORT = "webserver.port";
@@ -36,6 +38,12 @@ public final class ConfigurationKeys {
     public static final String STATS_HOST = "stats.host";
 
     public static final String CONFIG_HOST = "config.host";
+
+    public static final String WEBCLIENT_POLLINGRATE = "webclient.pollingrate";
+
+    public static final String TIME_ZONE = "time.zone";
+
+    public static final String NUM_STANDARD_DEVIATIONS = "num.standard.deviations";
 
     private ConfigurationKeys() {}
 

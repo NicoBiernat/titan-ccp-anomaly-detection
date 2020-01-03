@@ -17,7 +17,7 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
     - name: Archive build artifacts
-      uses: actions/upload-artifacts@v1
+      uses: actions/upload-artifact@v1
       with:
         name: titanccp-anomalydetection.tar
         path: build/distributions/titanccp-anomalydetection.tar

@@ -1,6 +1,5 @@
 package titan.ccp.anomalydetection.streamprocessing.detection;
 
-import org.apache.kafka.streams.kstream.Predicate;
 import titan.ccp.models.records.ActivePowerRecord;
 import titan.ccp.models.records.AggregatedActivePowerRecord;
 
@@ -10,16 +9,16 @@ import titan.ccp.models.records.AggregatedActivePowerRecord;
 public interface IAnomalyDetection {
 
     /**
-     * Returns a {@link Predicate} that determines if an {@link ActivePowerRecord} is an anomaly or not.
+     * Determines whether an {@link ActivePowerRecord} is an anomaly or not.
      * @return
-     * The predicate
+     * true, if the record was classified as an anomaly
      */
-    Predicate<String, ActivePowerRecord> activePowerRecordAnomalyDetection();
+    boolean activePowerRecordAnomalyDetection(final ActivePowerRecord record);
 
     /**
-     * Returns a {@link Predicate} that determines if an {@link AggregatedActivePowerRecord} is an anomaly or not.
+     * Determines whether {@link AggregatedActivePowerRecord} is an anomaly or not.
      * @return
-     * The predicate
+     * true, if the record was classified as an anomaly
      */
-    Predicate<String, AggregatedActivePowerRecord> aggregatedActivePowerRecordAnomalyDetection();
+    boolean aggregatedActivePowerRecordAnomalyDetection(final AggregatedActivePowerRecord record);
 }

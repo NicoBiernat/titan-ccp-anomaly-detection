@@ -45,6 +45,10 @@ public final class ConfigurationKeys {
 
     public static final String NUM_STANDARD_DEVIATIONS = "num.standard.deviations";
 
+    public static final String ANOMALY_TOLERANCE = "anomaly.tolerance";
+
+    public static final String ANOMALY_AGGREGATED_TOLERANCE = "anomaly.aggregated.tolerance";
+
     private ConfigurationKeys() {}
 
 }

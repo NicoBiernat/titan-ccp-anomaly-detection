@@ -75,7 +75,9 @@ public class AnomalyDetectionService {
                 .cassandraSession(clusterSession.getSession())
                 .anomalyDetection(new StatisticalAnomalyDetection(
                         this.config.getString(ConfigurationKeys.TIME_ZONE),
-                        this.config.getInt(ConfigurationKeys.NUM_STANDARD_DEVIATIONS)))
+                        this.config.getInt(ConfigurationKeys.NUM_STANDARD_DEVIATIONS),
+                        this.config.getDouble(ConfigurationKeys.ANOMALY_TOLERANCE),
+                        this.config.getDouble(ConfigurationKeys.ANOMALY_AGGREGATED_TOLERANCE)))
                 .tableNameSuffix(this.config.getString(ConfigurationKeys.CASSANDRA_TABLE_NAME_SUFFIX))
                 .bootstrapServers(this.config.getString(ConfigurationKeys.KAFKA_BOOTSTRAP_SERVERS))
                 .inputTopic(this.config.getString(ConfigurationKeys.KAFKA_INPUT_TOPIC))

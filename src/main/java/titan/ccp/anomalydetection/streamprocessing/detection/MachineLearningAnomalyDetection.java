@@ -1,6 +1,5 @@
 package titan.ccp.anomalydetection.streamprocessing.detection;
 
-import org.apache.kafka.streams.kstream.Predicate;
 import titan.ccp.models.records.ActivePowerRecord;
 import titan.ccp.models.records.AggregatedActivePowerRecord;
 
@@ -16,23 +15,19 @@ public abstract class MachineLearningAnomalyDetection implements IAnomalyDetecti
     private static final IDummyMachineLearningModel ML_MODEL = null;
 
     @Override
-    public Predicate<String, ActivePowerRecord> activePowerRecordAnomalyDetection() {
-        return (key, record) -> detectAnomaly(record.getIdentifier(), record.getTimestamp(), record.getValueInW());
+    public boolean activePowerRecordAnomalyDetection(final ActivePowerRecord record) {
+        return detectAnomaly(record.getIdentifier(), record.getTimestamp(), record.getValueInW());
     }
 
     @Override
-    public Predicate<String, AggregatedActivePowerRecord> aggregatedActivePowerRecordAnomalyDetection() {
-        return (key, record) -> detectAnomaly(record.getIdentifier(), record.getTimestamp(), record.getSumInW());
+    public boolean aggregatedActivePowerRecordAnomalyDetection(final AggregatedActivePowerRecord record) {
+        return detectAnomaly(record.getIdentifier(), record.getTimestamp(), record.getSumInW());
     }
 
     private boolean detectAnomaly(final String identifier, final long timestamp, final double value) {
         final double prediction = ML_MODEL.forecast(identifier, timestamp);
         final double deviation  = ML_MODEL.deviation(identifier, timestamp);
-        final boolean outlier =  Math.abs(value - prediction) < deviation;
-        if (!outlier) {
-            ML_MODEL.train(identifier, timestamp, value);
-        }
-        return outlier;
+        return Math.abs(value - prediction) < deviation;
     }
 
     private interface IDummyMachineLearningModel {
@@ -45,10 +40,5 @@ public abstract class MachineLearningAnomalyDetection implements IAnomalyDetecti
          * Return the precision of the forecast.
          */
         double deviation(final String identifier, final long timestamp);
-
-        /**
-         * Train the machine learning model with all records that are not an anomaly.
-         */
-        void train(final String identifier, final long timestamp, final double value);
     }
 }

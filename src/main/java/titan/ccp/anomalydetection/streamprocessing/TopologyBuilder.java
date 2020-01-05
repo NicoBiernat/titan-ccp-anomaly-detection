@@ -71,7 +71,7 @@ public class TopologyBuilder {
                 .stream(this.inputTopic, Consumed.with(
                         Serdes.String(),
                         IMonitoringRecordSerde.serde(new ActivePowerRecordFactory())))
-                .filter(anomalyDetection.activePowerRecordAnomalyDetection()::test)
+                .filter((key, record) -> anomalyDetection.activePowerRecordAnomalyDetection(record))
                 .peek((key, record) ->
                         LOGGER.info("Anomaly detected! Writing ActivePowerRecord {} to Cassandra\n",
                                     buildActivePowerRecordString(record)))
@@ -81,7 +81,7 @@ public class TopologyBuilder {
                 .stream(this.outputTopic, Consumed.with(
                         Serdes.String(),
                         IMonitoringRecordSerde.serde(new AggregatedActivePowerRecordFactory())))
-                .filter(anomalyDetection.aggregatedActivePowerRecordAnomalyDetection()::test)
+                .filter((key, record) -> anomalyDetection.aggregatedActivePowerRecordAnomalyDetection(record))
                 .peek((key, record) ->
                         LOGGER.info("Anomaly detected! Writing AggregatedActivePowerRecord {} to Cassandra\n",
                                     buildAggActivePowerRecordString(record)))

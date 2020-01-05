@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.math3.util.Precision;
-import org.apache.kafka.streams.kstream.Predicate;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +34,10 @@ public class StatisticalAnomalyDetection implements IAnomalyDetection {
 
     private final int numStandardDeviations;
 
+    private final double tolerance;
+
+    private final double aggregatedTolerance;
+
     /**
      * Create a new {@link StatisticalAnomalyDetection}.
      * @param timeZone
@@ -42,23 +45,29 @@ public class StatisticalAnomalyDetection implements IAnomalyDetection {
      * @param numStandardDeviations
      *  The number of standard deviations that a record has to be away from the mean to be classified as an outlier
      */
-    public StatisticalAnomalyDetection(final String timeZone, final int numStandardDeviations) {
+    public StatisticalAnomalyDetection(final String timeZone, final int numStandardDeviations,
+                                       final double tolerance, final double aggregatedTolerance) {
         this.statisticsCache = StatisticsCache.getInstance();
         this.zoneId = ZoneId.of(timeZone);
         this.numStandardDeviations = numStandardDeviations;
+        this.tolerance = tolerance;
+        this.aggregatedTolerance = aggregatedTolerance;
     }
 
     @Override
-    public Predicate<String, ActivePowerRecord> activePowerRecordAnomalyDetection() {
-        return (key, record) -> detectAnomaly(record.getIdentifier(), record.getTimestamp(), record.getValueInW());
+    public boolean activePowerRecordAnomalyDetection(final ActivePowerRecord record) {
+        return detectAnomaly(record.getIdentifier(), record.getTimestamp(),
+                record.getValueInW(), tolerance);
     }
 
     @Override
-    public Predicate<String, AggregatedActivePowerRecord> aggregatedActivePowerRecordAnomalyDetection() {
-        return (key, record) -> detectAnomaly(record.getIdentifier(), record.getTimestamp(), record.getSumInW());
+    public boolean aggregatedActivePowerRecordAnomalyDetection(final AggregatedActivePowerRecord record) {
+        return detectAnomaly(record.getIdentifier(), record.getTimestamp(),
+                record.getSumInW(), aggregatedTolerance);
     }
 
-    private boolean detectAnomaly(final String identifier, final long timestamp, final double value) {
+    private boolean detectAnomaly(final String identifier, final long timestamp,
+                                  final double value, final double tolerance) {
         final Instant instant = Instant.ofEpochMilli(timestamp);
         final LocalDateTime dateTime = LocalDateTime.ofInstant(instant, this.zoneId);
         final int dayOfWeek = dateTime.getDayOfWeek().getValue();
@@ -75,30 +84,31 @@ public class StatisticalAnomalyDetection implements IAnomalyDetection {
             return false;
         }
         final HourOfWeekActivePowerRecord prediction = stats.get(0);
-        final boolean anomaly = isOutlier(value, prediction.getMean(), prediction.getPopulationVariance());
-        if (LOGGER.isDebugEnabled() && anomaly) {
-            LOGGER.debug("  Day: {}", DayOfWeek.of(dayOfWeek).toString());
-            LOGGER.debug("  Hour: {}", hour);
-            LOGGER.debug("}");
+        final boolean anomaly = isOutlier(value, prediction.getMean(), prediction.getPopulationVariance(), tolerance);
+        if (LOGGER.isInfoEnabled() && anomaly) {
+            LOGGER.info("  Day: {}", DayOfWeek.of(dayOfWeek).toString());
+            LOGGER.info("  Hour: {}", hour);
+            LOGGER.info("}");
         }
         return anomaly;
     }
 
-    private boolean isOutlier(final double value, final double mean, final double variance) {
+    private boolean isOutlier(final double value, final double mean, final double variance, final double tolerance) {
         final double standardDeviation = Math.sqrt(variance);
-        // round value and mean to neglect tiny differences smaller than one milli Watt
-        final double valueRounded = Precision.round(value,3);
-        final double meanRounded = Precision.round(mean, 3);
-        final boolean outlier = Math.abs(meanRounded - valueRounded) > numStandardDeviations * standardDeviation;
-        if (LOGGER.isDebugEnabled() && outlier) {
-            LOGGER.debug("{");
-            LOGGER.debug("  Value: {}", value);
-            LOGGER.debug("  Mean: {}", mean);
-            LOGGER.debug("  Variance: {}", variance);
-            LOGGER.debug("  Standard Deviation: {}", standardDeviation);
-            LOGGER.debug("  {}x Standard Deviation: {}", numStandardDeviations,
+        // round value and mean to neglect tiny differences smaller than one Watt
+        final double valueRounded = Precision.round(value,0);
+        final double meanRounded = Precision.round(mean, 0);
+        final boolean outlier =
+                Math.abs(meanRounded - valueRounded) > numStandardDeviations * standardDeviation + tolerance;
+        if (LOGGER.isInfoEnabled() && outlier) {
+            LOGGER.info("{");
+            LOGGER.info("  Value: {}", value);
+            LOGGER.info("  Mean: {}", mean);
+            LOGGER.info("  Variance: {}", variance);
+            LOGGER.info("  Standard Deviation: {}", standardDeviation);
+            LOGGER.info("  {}x Standard Deviation: {}", numStandardDeviations,
                     numStandardDeviations * standardDeviation);
-            LOGGER.debug("  Difference Value-Mean: {}", Math.abs(value - mean));
+            LOGGER.info("  Difference Value-Mean: {}", Math.abs(value - mean));
         }
 
         return outlier;

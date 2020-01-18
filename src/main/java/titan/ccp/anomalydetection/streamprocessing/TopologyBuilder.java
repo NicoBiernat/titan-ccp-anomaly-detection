@@ -15,7 +15,7 @@ import org.apache.kafka.streams.kstream.Consumed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import titan.ccp.anomalydetection.streamprocessing.detection.IAnomalyDetection;
+import titan.ccp.anomalydetection.streamprocessing.detection.AnomalyDetection;
 import titan.ccp.common.cassandra.CassandraWriter;
 import titan.ccp.common.cassandra.ExplicitPrimaryKeySelectionStrategy;
 import titan.ccp.common.cassandra.PredefinedTableNameMappers;
@@ -38,7 +38,7 @@ public class TopologyBuilder {
     private final String outputTopic;
     private final Session cassandraSession;
     private final String tableNameSuffix;
-    private final IAnomalyDetection anomalyDetection;
+    private final AnomalyDetection anomalyDetection;
 
     private final StreamsBuilder builder = new StreamsBuilder();
 
@@ -47,7 +47,7 @@ public class TopologyBuilder {
      */
     public TopologyBuilder(final String inputTopic, final String outputTopic,
                            final Session cassandraSession, final String tableNameSuffix,
-                           final IAnomalyDetection anomalyDetection) {
+                           final AnomalyDetection anomalyDetection) {
         this.inputTopic = inputTopic;
         this.outputTopic = outputTopic;
         this.cassandraSession = cassandraSession;

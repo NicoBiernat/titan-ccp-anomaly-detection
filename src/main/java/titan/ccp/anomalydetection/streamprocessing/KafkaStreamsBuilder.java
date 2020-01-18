@@ -8,7 +8,7 @@ import java.util.Properties;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsConfig;
 
-import titan.ccp.anomalydetection.streamprocessing.detection.IAnomalyDetection;
+import titan.ccp.anomalydetection.streamprocessing.detection.AnomalyDetection;
 import titan.ccp.common.kafka.streams.PropertiesBuilder;
 
 /**
@@ -19,7 +19,7 @@ public class KafkaStreamsBuilder {
     private static final String APPLICATION_NAME = "titan-ccp-anomalydetection";
     private static final String APPLICATION_VERSION = "0.0.1";
 
-    private IAnomalyDetection anomalyDetection; // NOPMD
+    private AnomalyDetection anomalyDetection; // NOPMD
     private Session cassandraSession; // NOPMD
     private String tableNameSuffix; // NOPMD
     private String bootstrapServers; // NOPMD
@@ -29,7 +29,7 @@ public class KafkaStreamsBuilder {
     private int commitIntervalMs = -1; // NOPMD
     private int cacheMaxBytesBuff = -1; // NOPMD
 
-    public KafkaStreamsBuilder anomalyDetection(final IAnomalyDetection anomalyDetection) {
+    public KafkaStreamsBuilder anomalyDetection(final AnomalyDetection anomalyDetection) {
         this.anomalyDetection = anomalyDetection;
         return this;
     }

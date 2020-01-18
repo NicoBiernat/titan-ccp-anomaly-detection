@@ -6,7 +6,7 @@ import titan.ccp.models.records.AggregatedActivePowerRecord;
 /**
  * An interface for Anomaly-Detection implementations.
  */
-public interface IAnomalyDetection {
+public interface AnomalyDetection {
 
     /**
      * Determines whether an {@link ActivePowerRecord} is an anomaly or not.

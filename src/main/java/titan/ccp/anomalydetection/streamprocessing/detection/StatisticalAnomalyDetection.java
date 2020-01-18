@@ -24,7 +24,7 @@ import titan.ccp.models.records.AggregatedActivePowerRecord;
  * this implementation detects values that are further than three standard deviations away
  * from the mean of every hour of a week.
  */
-public class StatisticalAnomalyDetection implements IAnomalyDetection {
+public class StatisticalAnomalyDetection implements AnomalyDetection {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StatisticalAnomalyDetection.class);
 

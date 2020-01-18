@@ -10,7 +10,7 @@ import titan.ccp.models.records.AggregatedActivePowerRecord;
  * This class is abstract so that nobody thinks of initializing it.
  */
 @SuppressWarnings("unused")
-public abstract class MachineLearningAnomalyDetection implements IAnomalyDetection {
+public abstract class MachineLearningAnomalyDetection implements AnomalyDetection {
 
     private static final IDummyMachineLearningModel ML_MODEL = null;
 

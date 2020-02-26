@@ -44,7 +44,7 @@ public class AnomalyDetectionService {
 
         final CompletableFuture<Void> restApiClientStartedEvent =
                 CompletableFuture.runAsync(this::startWebclient);
-
+        
         return CompletableFuture.allOf(
                 kafkaStartedEvent, restApiServerStartedEvent, restApiClientStartedEvent);
     }

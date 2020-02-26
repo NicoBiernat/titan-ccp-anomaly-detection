@@ -73,9 +73,12 @@ public class StatisticalAnomalyDetection implements AnomalyDetection {
         final int dayOfWeek = dateTime.getDayOfWeek().getValue();
         final int hour = dateTime.getHour();
 
-        final List<HourOfWeekActivePowerRecord> stats = statisticsCache.getHourOfWeek().get(identifier)
-                .stream().filter(elem -> elem.getDayOfWeek() == dayOfWeek && elem.getHourOfDay() == hour)
-                .collect(Collectors.toList());
+        List<HourOfWeekActivePowerRecord> stats = statisticsCache.getHourOfWeek().get(identifier);
+        if (stats == null) {
+            return false;
+        }
+        stats = stats.stream().filter(elem -> elem.getDayOfWeek() == dayOfWeek && elem.getHourOfDay() == hour)
+                     .collect(Collectors.toList());
         if (stats.isEmpty()) {
             return false; // not an anomaly if there is no prediction
         }
